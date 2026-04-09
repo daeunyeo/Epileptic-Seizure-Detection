@@ -75,7 +75,8 @@ Total: **228 features per epoch** (epoch shape: `1800 × 19 × 256`)
 | Nonlinear | Spectral Entropy | 19 |
 | Nonlinear | Lyapunov Exponent (`nolds.lyap_r`) | 19 |
 
-<img width="988" height="790" alt="9 feature importance 시각화" src="https://github.com/user-attachments/assets/61d7544e-3088-4695-9b4a-59800b3566b1" />
+<img width="988" height="790" alt="epi feature importance" src="https://github.com/user-attachments/assets/05396b0d-7691-45c9-a1bf-e4e0d2dfc926" />
+
 *Top 20 feature importances from Balanced Random Forest — used to select final 30 features for XGBoost*
 
 ---
@@ -172,10 +173,6 @@ requires addressing the root causes listed below.
 ├── train.ipynb      # preprocessing → feature extraction → model training → save .pkl
 ├── validate.ipynb   # load .pkl → chb01_04 validation + threshold sweep
 ├── pipeline.ipynb   # load .pkl → inference on any EDF window
-├── models/
-│   └── .gitkeep             # .pkl files excluded via .gitignore
-├── data/
-│   └── .gitkeep             # EDF files excluded via .gitignore
 └── README.md
 ```
 ---
