@@ -102,8 +102,9 @@ on unseen data (chb01_04) in the Validation section.
 
 ## 6. Validation
 
-Model trained on `chb01_03` was applied without retraining to `chb01_04, 1360–1560s crop, 100 epochs`
+Model trained on `chb01_03` was applied without retraining to `chb01_04`
 (same subject, unseen recording — cross-session generalization).
+Evaluation window: 1360–1560 s (200 s, 100 epochs — 14 seizure, 86 normal).
 
 y_true was constructed from physician annotations:
 epochs overlapping with the 1467–1494 s interval were labeled as seizure.
@@ -184,4 +185,5 @@ requires addressing the root causes listed below.
 ## 13. Data
 
 [CHB-MIT Scalp EEG Database](https://physionet.org/content/chbmit/1.0.0/) (PhysioNet, open access)
-Download separately and place under `data/`. Not included in this repository.
+Download separately and place in a local directory.
+Set DATA_DIR in each notebook to the folder path before running.
