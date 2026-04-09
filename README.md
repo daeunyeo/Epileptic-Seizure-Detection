@@ -58,11 +58,13 @@ not just self-generated labels.
 | Threshold tuning | 1% grid search, 15%–35% | 15% showed lowest FN on internal split; Recall = 100% confirmed on unseen data (chb01_04) |
 
 <img width="651" height="491" alt="9 ica000제거 overlay" src="https://github.com/user-attachments/assets/66ca30de-c8e3-4f95-ade5-d943875a17cb" />
+
 *Before/after ICA removal of ICA000 (ocular artifact component) — red: original, black: cleaned*
 
 
 
 <img width="772" height="793" alt="9 ptp,v threshold_스파이크의심구간" src="https://github.com/user-attachments/assets/adb268fb-26ef-452b-a861-8b2592783f5b" />
+
 *First epoch flagged by dual-threshold pseudo-labeling (PtP AND Variance > mean+3σ) — epoch 17, 34–36 s*
 
 ---
