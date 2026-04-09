@@ -4,15 +4,20 @@
 
 ## 1. Background & Motivation
 
-Epileptic seizures can cause sudden loss of consciousness, injury, or death.
-In a clinical monitoring context, **a missed seizure (false negative) is categorically
-more dangerous than a false alarm (false positive)** — a false alarm prompts unnecessary
-review, but a missed seizure means no intervention at all.
+In clinical seizure monitoring, **missing a real seizure (false negative) is far more 
+dangerous than a false alarm** — an undetected seizure means no intervention, 
+which can result in serious harm to the patient.
 
-This project builds an end-to-end ML pipeline that detects seizure activity from
-scalp EEG signals. The entire design — from labeling strategy to threshold selection —
-is oriented around a single clinical constraint: **Recall must be 100%**.
-No real seizure epoch should go undetected.
+The goal of this project is to build an ML pipeline that automatically detects 
+epileptic seizure activity from scalp EEG signals in 2-second windows, 
+prioritizing Recall above all other metrics so that no real seizure goes undetected.
+
+To ensure the pipeline was tested against clinically meaningful ground truth, 
+the CHB-MIT Scalp EEG Database — real EEG recordings from epileptic patients 
+annotated by physicians — was used as the data source.
+The model trained on one recording (`chb01_03`) was validated on a separate 
+unseen recording (`chb01_04`), achieving **Recall 100% (FN = 0)** on 
+physician-annotated seizure intervals.
 
 ---
 
