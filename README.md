@@ -50,7 +50,7 @@ not just self-generated labels.
 | Rule-based pseudo-labeling | PtP AND Variance > mean+3σ → label=1 | No physician labels available **for training data**; statistical threshold approximates spike epochs |
 | Model comparison | Balanced RF vs. XGBoost | Evaluate whether boosting with class-weight penalty outperforms resampling-based balancing |
 | Feature selection | Top 30 by BRF Feature Importance | Reduce dimensionality; remove redundant features to improve generalization |
-| Threshold tuning | 1% grid search, 15%–35% | Find lowest threshold that sustains Recall = 100% on unseen data |
+| Threshold tuning | 1% grid search, 15%–35% | 15% showed lowest FN on internal split; Recall = 100% confirmed on unseen data (chb01_04) |
 
 <img width="651" height="491" alt="9 ica000제거 overlay" src="https://github.com/user-attachments/assets/66ca30de-c8e3-4f95-ade5-d943875a17cb" />
 *Before/after ICA removal of ICA000 (ocular artifact component) — red: original, black: cleaned*
@@ -87,14 +87,15 @@ Both models were trained on the same 80/20 split with the same 228→30 features
 
 | Model | Recall | Precision | FN | Note |
 |---|---|---|---|---|
-| Balanced Random Forest | 0.81 | 0.31 | 4 | High FP (37), misses seizures |
-| XGBoost (threshold 50%) | 0.67 | 0.74 | 7 | Better precision, misses 7 seizures |
-| XGBoost (threshold 30%) | 0.67 | 0.70 | 7 | No improvement over 50% |
-| **XGBoost (threshold 15%)** | **1.00** | 0.46 | **0** | All seizures detected — adopted |
+| Balanced Random Forest | 0.81 | 0.31 | 4 | FP=38 — alarm fatigue risk; XGBoost confirmed FN=0 on external validation |
+| XGBoost (threshold 50%)   | 0.62 | 0.76 | 8  | Misses 8 seizures |
+| XGBoost (threshold 30%)   | 0.67 | 0.74 | 7  | Misses 7 seizures |
+| **XGBoost (threshold 15%)**   | **0.71** | 0.68 | **6**  | Lowest FN on internal split — selected for external validation |
 
-XGBoost with `scale_pos_weight = 15.0` (ratio of negative to positive samples)
-was selected. Threshold was set to 15% — the lowest value that keeps FN = 0
-on the internal test split, confirmed on the external recording in step 5.
+XGBoost with scale_pos_weight = 15.0 was selected.
+Threshold 15% produced the lowest FN (6) and highest Recall (0.71)
+on the internal test split — selected as candidate and confirmed
+on unseen data (chb01_04) in the Validation section.
 
 ---
 
@@ -107,7 +108,7 @@ y_true was constructed from physician annotations:
 epochs overlapping with the 1467–1494 s interval were labeled as seizure.
 Evaluation window: 1360–1560 s (200 s, 100 epochs total — 14 seizure, 86 normal).
 
-### 7. Results
+## 7. Results
 
 | Metric | Value |
 |---|---|
@@ -118,14 +119,14 @@ Evaluation window: 1360–1560 s (200 s, 100 epochs total — 14 seizure, 86 nor
 | FN | **0** |
 | TN | 73 |
 
-### 8. Threshold sweep (15%–35%, 1% step)
+## 8. Threshold sweep (15%–35%, 1% step)
 
 | Threshold | Recall | Precision |
 |---|---|---|
-| 15–18% | 100.0% | 51.9% |
-| **19%+** | **92.9%** | ~50–54% |
+| 15–27% | 100.0% | 51.9% |
+| 28%+   | 92.9%  | ~50–54% |
 
-Threshold 19% caused 1 missed seizure epoch (FN=1).
+Threshold 28% caused 1 missed seizure epoch (FN=1).
 **15% was confirmed as the optimal lower bound.**
 
 ---
@@ -133,7 +134,7 @@ Threshold 19% caused 1 missed seizure epoch (FN=1).
 ## 9. Discussion
 
 **Precision-Recall trade-off**
-Raising the threshold above 18% dropped Recall to 92.9% — one real seizure epoch
+Raising the threshold above 27% dropped Recall to 92.9% — one real seizure epoch
 was no longer detected. This directly confirmed the design constraint: in seizure
 screening, optimizing for Precision at the cost of Recall is clinically unacceptable.
 The 13 false positives at threshold 15% represent unnecessary alerts, but each can
@@ -168,13 +169,9 @@ requires addressing the root causes listed below.
 
 ## 11. Repository Structure
 ```
-├── src/
-│   ├── 01_preprocessing.py
-│   ├── 02_feature_extraction.py
-│   ├── 03_train.py
-│   ├── 04_save_and_simulate.py
-│   └── 05_validate_threshold.py
-├── pipeline.py              # full inference pipeline (load model → predict)
+├── train.ipynb      # preprocessing → feature extraction → model training → save .pkl
+├── validate.ipynb   # load .pkl → chb01_04 validation + threshold sweep
+├── pipeline.ipynb   # load .pkl → inference on any EDF window
 ├── models/
 │   └── .gitkeep             # .pkl files excluded via .gitignore
 ├── data/
