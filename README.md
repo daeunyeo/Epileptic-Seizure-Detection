@@ -122,11 +122,13 @@ Evaluation window: 1360–1560 s (200 s, 100 epochs total — 14 seizure, 86 nor
 | Metric | Value |
 |---|---|
 | Recall | **100.0%** |
-| Precision | 51.9% |
+| F1-score (seizure) | 0.68 |
 | TP | 14 |
 | FP | 13 |
 | FN | **0** |
 | TN | 73 |
+
+> Full classification report including per-class precision, recall, F1-score, and support is available in `validate.ipynb` output.
 
 ## 8. Threshold sweep (15%–35%, 1% step)
 
