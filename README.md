@@ -4,17 +4,14 @@
 
 ## 1. Background & Motivation
 
-In clinical seizure monitoring, **missing a real seizure (false negative) is far more 
-dangerous than a false alarm** — an undetected seizure means no intervention, 
-which can result in serious harm to the patient.
+In clinical seizure monitoring, **missing a real seizure (false negative) is far more dangerous than a false alarm**. An undetected seizure means no intervention, which can result in serious harm to the patient.
 
 The goal of this project is to build an ML pipeline that automatically detects 
 epileptic seizure activity from scalp EEG signals in 2-second windows, 
 prioritizing Recall above all other metrics so that no real seizure goes undetected.
 
 To ensure the pipeline was tested against clinically meaningful ground truth, 
-the CHB-MIT Scalp EEG Database — real EEG recordings from epileptic patients 
-annotated by physicians — was used as the data source.
+the CHB-MIT Scalp EEG Database (real EEG recordings from epileptic patients annotated by physicians) was used as the data source.
 The model trained on one recording (`chb01_03`) was validated on a separate 
 unseen recording (`chb01_04`), achieving **Recall 100% (FN = 0)** on 
 physician-annotated seizure intervals.
@@ -35,9 +32,7 @@ physician-annotated seizure intervals.
 
 Ground truth for validation: physician-annotated seizure interval **1467–1494 s**
 
-The dataset was chosen because it provides real clinical EEG with verified seizure
-annotations — a prerequisite for meaningful evaluation against an actual ground truth,
-not just self-generated labels.
+The dataset was chosen because it provides real clinical EEG with verified seizure annotations, which is a prerequisite for meaningful evaluation against actual ground truth rather than self-generated labels.
 
 ---
 
@@ -65,7 +60,7 @@ not just self-generated labels.
 
 <img width="772" height="793" alt="9 ptp,v threshold_스파이크의심구간" src="https://github.com/user-attachments/assets/adb268fb-26ef-452b-a861-8b2592783f5b" />
 
-*First epoch flagged by dual-threshold pseudo-labeling (PtP AND Variance > mean+3σ) — epoch 17, 34–36 s*
+*First epoch flagged by dual-threshold pseudo-labeling (PtP AND Variance > mean+3σ), epoch 17, 34–36 s*
 
 ---
 
@@ -84,7 +79,7 @@ Total: **228 features per epoch** (epoch shape: `1800 × 19 × 256`)
 
 <img width="988" height="790" alt="epi feature importance" src="https://github.com/user-attachments/assets/05396b0d-7691-45c9-a1bf-e4e0d2dfc926" />
 
-*Top 20 feature importances from Balanced Random Forest — used to select final 30 features for XGBoost*
+*Top 20 feature importances from Balanced Random Forest, used to select final 30 features for XGBoost*
 
 ---
 
@@ -101,21 +96,19 @@ Both models were trained on the same 80/20 split with the same 228→30 features
 | **XGBoost (threshold 15%)**   | **0.71** | 0.68 | **6**  | Lowest FN on internal split, selected for external validation |
 
 XGBoost with scale_pos_weight = 15.0 was selected.
-Threshold 15% produced the lowest FN (6) and highest Recall (0.71)
-on the internal test split — selected as candidate and confirmed
-on unseen data (chb01_04) in the Validation section.
+Threshold 15% produced the lowest FN (6) and highest Recall (0.71) on the internal test split, and was confirmed on unseen data (chb01_04) in the Validation section.
 
 ---
 
 ## 6. Validation
 
 Model trained on `chb01_03` was applied without retraining to `chb01_04`
-(same subject, unseen recording — cross-session generalization).
-Evaluation window: 1360–1560 s (200 s, 100 epochs — 14 seizure, 86 normal).
+(same subject, unseen recording, cross-session generalization).
+Evaluation window: 1360–1560 s (200 s, 100 epochs: 14 seizure, 86 normal).
 
 y_true was constructed from physician annotations:
 epochs overlapping with the 1467–1494 s interval were labeled as seizure.
-Evaluation window: 1360–1560 s (200 s, 100 epochs total — 14 seizure, 86 normal).
+Evaluation window: 1360–1560 s (200 s, 100 epochs total: 14 seizure, 86 normal).
 
 ## 7. Results
 
@@ -145,12 +138,10 @@ Threshold 28% caused 1 missed seizure epoch (FN=1).
 ## 9. Discussion
 
 **Precision-Recall trade-off**
-Raising the threshold above 27% dropped Recall to 92.9% — one real seizure epoch
-was no longer detected. This directly confirmed the design constraint: in seizure
+Raising the threshold above 27% dropped Recall to 92.9%, missing one real seizure epoch. This directly confirmed the design constraint: in seizure
 screening, optimizing for Precision at the cost of Recall is clinically unacceptable.
 The 13 false positives at threshold 15% represent unnecessary alerts, but each can
-be reviewed by a clinician. The alternative — missing a seizure — cannot be corrected
-after the fact.
+be reviewed by a clinician. Missing a seizure cannot be corrected after the fact.
 
 **Pseudo-label generalization gap**
 Internal Precision (chb01_03 split): ~74% (XGBoost, default threshold 50%) → External Precision (chb01_04): 51.9%.
